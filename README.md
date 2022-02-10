@@ -1,2 +1,2 @@
-# [Spring 개인 프로젝트] watchAround.    
+# [Spring 프로젝트] watchAround.    
 테스트
