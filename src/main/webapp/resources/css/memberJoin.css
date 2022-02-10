@@ -1,0 +1,36 @@
+
+/* 테이블 */
+#basicTable{
+    width: 70%;
+    margin: auto;
+}
+
+/*비밀번호,비번확인 입력창*/
+#pwd, #pwdConfirm, #name{
+    width: 200px;
+    
+    display: inline-block;
+}
+
+#pwd, #pwdConfirm{
+    width : 327px;
+}
+/*휴대 전화 input*/
+#cellphone, #cellphone2, #cellphone3{
+    width: 80px;
+    
+    display: inline-block;
+}
+
+/*이메일*/
+#email{
+    width: 200px;
+
+}
+
+/*이름 input*/
+#name{
+    width: 200px;
+
+}
+

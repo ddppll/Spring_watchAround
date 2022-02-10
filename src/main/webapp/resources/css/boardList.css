@@ -1,0 +1,49 @@
+@charset "UTF-8";
+p{
+	font-family: 'pretendard';
+}
+body{
+	font-family: 'pretendard';	
+	background-color : #171721;
+}
+body > .container{
+	width:100%;
+	
+}
+.header{
+	font-size : 2rem;
+	color : white;
+	position: absolute;
+	top: 45%;
+	left : 5%;
+	
+}
+
+/* 테이블 */ 
+table{
+	font-family: 'pretendard';	
+}
+thead {
+	background-color : #94d2bd;	
+	font-size : 0.8rem;
+}
+tbody{
+	background-color : white;
+}
+
+/* 검색 input */
+#search_target{
+	border: 1px solid gray;
+    border-radius: 6px;
+    padding: 4px 6px;
+}
+option{
+	font-family: 'pretendard';
+	font-size:0.8rem;
+}
+#searchString{
+	border-radius: 6px;
+    padding: 4px 6px;
+    border: 1px solid gray;
+    width : 40%;
+}

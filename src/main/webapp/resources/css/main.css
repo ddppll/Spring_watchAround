@@ -1,0 +1,29 @@
+@charset "UTF-8";
+p{
+	font-family: 'pretendard';
+}
+body{
+	font-family: 'pretendard';	
+	background-color : #171721;
+}
+.container{
+	margin-top:70px;
+	position : relative;
+}
+video{
+   	min-width:100%;
+	width:100%;
+	height : 400px;
+	object-fit : cover;
+	z-index:-1;
+	position : relative;
+	overflow:hidden;
+}
+.mainTitle{
+	font-size : 2rem;
+	color : white;
+	position: absolute;
+	top: 45%;
+	left : 5%;
+	
+} 

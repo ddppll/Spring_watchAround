@@ -1,0 +1,33 @@
+@charset "UTF-8";
+body{
+	font-family: 'pretendard';	
+}
+
+#category{
+	font-family: 'pretendard';	
+	border-style: none;
+    border-radius: 6px;
+    padding: 4px 6px;
+}
+#title{
+	font-family: 'pretendard';	
+	border : none;
+	width : 100%;
+}
+#title:focus{
+	outline:none;
+}
+option{
+	font-family: 'pretendard';
+}
+option:focus{
+	outline:none;
+}
+table{
+	background-color:white;
+	
+}
+
+.container{
+	margin-top:70px;
+}

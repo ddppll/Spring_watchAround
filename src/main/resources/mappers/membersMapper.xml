@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.cjs2108_ksh.dao.MembersDAO">
+
+	<select id="getEmailCheck" resultType="com.spring.cjs2108_ksh.vo.MembersVO">
+		select * from members where email = #{email};
+	</select>
+
+	<select id="getNickNameCheck" resultType="com.spring.cjs2108_ksh.vo.MembersVO">
+		select * from members where nickName = #{nickName};
+	</select>
+	
+	<insert id="memberJoin">
+		insert into members values (default, #{vo.email}, #{vo.pwd}, #{vo.nickName}, #{vo.tel}, default, default, default, default, default);
+	</insert>
+	
+	<update id="visitUpdate">
+		update members set visitCnt=visitCnt+1, lastDate=now() where email = #{email};
+	</update>
+	
+	<update id="setMemEdit">
+		update members set pwd = #{vo.pwd}, nickName=#{vo.nickName}, tel = #{vo.tel} where email = #{vo.email};
+	</update>
+	
+	<update id="setMemDelete">
+		update members set userDel = 'OK' where email = #{email};
+	</update>
+	
+	<select id="getPwdConfirm" resultType="com.spring.cjs2108_ksh.vo.MembersVO">
+		select * from members where email = #{toMail};
+	</select>
+	
+	<update id="setPwdChange">
+		update members set pwd = #{pwd} where email = #{toMail};
+	</update>
+</mapper>

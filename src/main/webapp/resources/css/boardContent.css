@@ -1,0 +1,29 @@
+@charset "UTF-8";
+body{
+	font-family: 'pretendard';	
+}
+table{
+	width : 100%;
+	background-color:white;
+	font-family: 'pretendard';	
+}
+
+.container{
+	margin-top:70px;
+}
+
+#category{
+	border-right : 1px solid #e5e5e5;
+		
+}
+#secondRow{
+	font-size:0.8rem;
+	background-color:#FAFAFA;
+}
+.table td{
+	border-top : 1px solid #e5e5e5; 	
+}
+#replyWrite{
+	background-color:#FAFAFA;
+}
+

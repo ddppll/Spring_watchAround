@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.cjs2108_ksh.dao.ShopDAO">
+	<!-- 대분류이름 담기 -->
+	<select id="getCateMainName" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		select categoryMainName from categoryMain group by categoryMainName order by categoryMainName;
+	</select>
+	
+	<!-- 전체 상품 리스트 건수 -->
+	<select id="totRecCntPdList" resultType="int">
+		select count(*) from product;
+	</select>
+	
+	<!-- 분류별 상품 리스트 건수 -->
+	<select id="totRecCntPdListCate" resultType="int">
+		<if test="mainCate == ''">
+			select count(*) from product;
+		</if>
+		<if test="mainCate != '' and midCate == ''">
+			select count(*) from product, categoryMain main where main.categoryMainName = #{mainCate} 
+			and substr(product.productCode,1,1) = main.categoryMainCode;
+		</if>
+		<if test="mainCate != '' and midCate != ''">
+			select count(*) from product, categoryMiddle mid where mid.categoryMiddleName = #{midCate} 
+			and substr(product.productCode,2,2) = mid.categoryMiddleCode;
+		</if>
+	</select>
+	
+	<!-- 상품 리스트 호출 -->
+	<select id="getProductList" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		select * from product order by idx desc limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<!-- 분류별 상품 리스트 호출 -->
+	<select id="getProductListCate" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		<if test="mainCate == ''">
+			select * from product order by idx desc limit #{startIndexNo}, #{pageSize};
+		</if>
+		<if test="mainCate != '' and midCate == ''">
+			select product.*,main.categoryMainName from product product,categoryMain main 
+			where main.categoryMainName = #{mainCate} 
+			and substr(product.productCode,1,1) = main.categoryMainCode order by idx desc limit #{startIndexNo}, #{pageSize};
+		</if>
+		<if test="mainCate != '' and midCate != ''">
+			select product.*,mid.categoryMiddleName from product product,categoryMiddle mid 
+			where mid.categoryMiddleName = #{midCate} 
+			and substr(product.productCode,2,2) = mid.categoryMiddleCode order by idx desc limit #{startIndexNo}, #{pageSize};
+		</if>
+	</select>
+	
+	<!-- 상품 상세 설명 -->
+	<select id="getProductContent" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		select * from product where idx = #{idx};
+	</select>
+	
+	<!-- 장바구니 상품 서치 -->
+	<select id="cartListPdOptionSearch" resultType="com.spring.cjs2108_ksh.vo.PdCartListVO">
+		select * from pdCartList where productName = #{productName} and optionName = #{optionName} and email = #{email};
+	</select>
+	
+	<!-- 장바구니 상품 업데이트(장바구니에 뭐 있을 때) -->
+	<update id="cartListUpdate">
+		update pdCartList set optionNum=#{vo.optionNum}, totalPrice=totalPrice+#{vo.totalPrice} where productName=#{vo.productName} and optionName=#{vo.optionName};
+	</update>
+	
+	<!-- 장바구니 상품 입력(장바구니에 뭐 없을 때) -->
+	<insert id="cartListInput">
+		insert into pdCartList values (default,default,#{vo.email},#{vo.productIdx},#{vo.productName},#{vo.mainPrice},#{vo.thumbImg},#{vo.optionIdx},#{vo.optionName},#{vo.optionPrice},#{vo.optionNum},#{vo.totalPrice});
+	</insert>
+	
+	<!-- 장바구니 목록 가져오기 -->
+	<select id="getPdCartList" resultType="com.spring.cjs2108_ksh.vo.PdCartListVO">
+		select *, (select saleRate from product where idx = pdCartList.productIdx) as saleRate, 
+		(select mainPrice from product where idx = pdCartList.productIdx) as costPrice from pdCartList where email = #{email};
+	</select>
+	
+	<!-- 장바구니 전체 삭제 -->
+	<delete id="cartAllDel">
+		delete from pdCartList where email = #{email};
+	</delete>
+	
+	<!-- 장바구니 품목 삭제(버튼) -->
+	<delete id="cartDel">
+		delete from pdCartList where idx = #{idx};
+	</delete>
+	
+	<!-- 장바구니에서 수량 변경시 db 업데이트 -->
+	<update id="cartPdNumChange">
+		update pdCartList set optionNum = #{num}, totalPrice = #{totalPrice} where idx=#{idx} and email=#{email};
+	</update>
+	
+	<!-- 주문시 장바구니에 있는거 다 가져오기 -->
+	<select id="getCartIdx" resultType="com.spring.cjs2108_ksh.vo.PdCartListVO">
+		select *, (select saleRate from product where idx = pdCartList.productIdx) as saleRate,
+		(select mainPrice from product where idx = pdCartList.productIdx) as costPrice from pdCartList where idx = #{idx};
+	</select>
+	
+	<!-- 바로주문시 해당 상품 할인률과 원가 가져오기 -->
+	<select id="getSaleInfo" resultType="String">
+		select saleRate from product where idx = #{productIdx};
+	</select>
+	<select id="getMainPrice" resultType="int">
+		select mainPrice from product where idx = #{productIdx};
+	</select>
+	
+	<!-- 주문 idx 중 제일 큰 idx 가져오기 -->
+	<select id="getOrderMaxIdx" resultType="com.spring.cjs2108_ksh.vo.PdOrderVO">
+		select max(idx) as maxIdx from pdOrder;
+	</select>
+	
+	<!-- 주문 테이블에 주문 내용 저장 -->
+	<insert id="setPdOrder">
+		insert into pdOrder values (default,#{vo.orderIdx},#{vo.email},#{vo.productIdx},default,#{vo.productName},#{vo.mainPrice},#{vo.thumbImg},#{vo.optionName},#{vo.optionPrice},#{vo.optionNum},#{vo.totalPrice});
+	</insert>
+	
+	<!-- 주문 완료 후 장바구니에서 주문 내역 삭제 -->
+	<delete id="delCartList">
+		delete from pdCartList where idx = #{cartIdx};
+	</delete>
+	
+	<select id="getOrderOIdx" resultType="int">
+		select max(idx) from pdOrder where orderIdx = #{orderIdx};
+	</select>
+	
+	<!-- 배송테이블에 저장 -->
+	<insert id="setDbDeliver">
+		insert into pdDeliver values (default,#{deliverVo.oIdx},#{deliverVo.orderIdx},#{deliverVo.orderTotalPrice},#{deliverVo.email},#{deliverVo.deliverName},#{deliverVo.address},#{deliverVo.tel},#{deliverVo.message},#{deliverVo.payment},#{deliverVo.payMethod},default);
+	</insert>
+	
+	<!-- 주문완료 후 주문확인 호출 -->
+	<select id="getDelivery" resultType="com.spring.cjs2108_ksh.vo.PdDeliverVO">
+		select * from pdDeliver where email = #{email};
+	</select>
+	
+	<!-- 주문확인 호출 : 바로주문일 경우 -->
+	<select id="getDeliveryImme" resultType="com.spring.cjs2108_ksh.vo.PdDeliverVO">
+		select * from pdDeliver where email = #{email};
+	</select>
+	
+	<!-- 페이징처리 : 전체자료 개수 검색 -->
+	<select id="totRecCnt" resultType="int">
+		select count(*) from pdOrder where email = #{email};
+	</select>
+	
+	<!-- 내 주문 내역 가져오기 -->
+	<select id="getMyOrder" resultType="com.spring.cjs2108_ksh.vo.PdDeliverVO">
+		select oder.*,delivery.* from pdOrder oder join pdDeliver delivery using(orderIdx) where delivery.email=#{email} order by delivery.idx desc limit #{startIndexNo},#{pageSize}; 
+	</select>
+	
+	<!-- 주문 상태 개수 가져오기 -->
+	<select id="getOrderStatus1" resultType="com.spring.cjs2108_ksh.vo.PdOrderVO">
+		select count(case when orderStatus = '결제완료' then 1 end) as payEnd,  
+		count(case when orderStatus = '배송중' then 1 end) as deliver,
+		count(case when orderStatus = '배송완료' then 1 end) as deliverEnd
+		from pdOrder oderStatus join pdDeliver delivery using(orderIdx) where delivery.email=#{email} order by delivery.idx desc;
+	</select>
+		
+	<!-- 주문내역 가져올 때 해당 주문 상품 세일 전 원가 가져오기 -->
+	<select id="getCostPrice1" resultType="java.lang.Integer">
+		select mainPrice from product where idx = #{productIdx}; 
+	</select> 
+	
+	<!-- 배송지 정보 가져오기 -->
+	<select id="getOrderDeliveryInfo" resultType="com.spring.cjs2108_ksh.vo.PdDeliverVO">
+		select * from pdDeliver where orderIdx = #{orderIdx};
+	</select>
+	
+	<!-- 주문상태별 조회시 건수 가져오기 -->
+   <select id="totRecCntStatus" resultType="int">
+		<if test="orderStatus == '전체'">
+		    select count(*) from pdOrder a join pdDeliver b using(orderIdx) where b.email=#{email};
+	    </if>
+	    <if test="orderStatus != '전체'">
+		    select count(*) from pdOrder a join pdDeliver b using(orderIdx) where b.email=#{email} and b.orderStatus=#{orderStatus};
+	    </if>
+	</select>
+	
+	<!-- 날짜별 조회시 자료 건수 가져오기 -->
+	<select id="totRecCntStatusDate" resultType="int">
+		select count(*) from pdOrder a join pdDeliver b using(orderIdx) <![CDATA[ where date(orderDate) >= date(#{startJumun}) and date(orderDate) <= date(#{endJumun}) and b.email=#{email} order by orderDate desc ]]>;
+	</select>
+	
+	<!-- 기본 조회시 자료 건수 가져오기 -->
+	<select id="totRecCntBasic" resultType="int">
+		select count(*) from pdOrder a join pdDeliver b using(orderIdx) where b.email=#{email} order by orderDate desc;
+	</select>
+	
+	<!-- 날짜별 조회 자료 내용 가져오기 -->
+	<select id="getOrderByDate" resultType="com.spring.cjs2108_ksh.vo.PdDeliverVO">
+		select a.*,b.* from pdOrder a join pdDeliver b using(orderIdx) <![CDATA[ where date(orderDate) >= date(#{startJumun}) and date(orderDate) <= date(#{endJumun}) and b.email=#{email} order by orderDate desc limit #{startIndexNo}, #{pageSize} ]]>;
+	</select>
+	
+	<!-- 기본 조회 자료 내용 가져오기 -->
+	<select id="getOrderBasic" resultType="com.spring.cjs2108_ksh.vo.PdDeliverVO">
+		select a.*,b.* from pdOrder a join pdDeliver b using(orderIdx) where b.email=#{email} order by orderDate desc limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<!-- 주문상태별 조회 내용 가져오기 -->
+	<select id="getOrderStatus" resultType="com.spring.cjs2108_ksh.vo.PdDeliverVO">
+	    <if test='orderStatus.equals("전체")'>
+	      select a.*,b.* from pdOrder a join pdDeliver b using(orderIdx) where b.email=#{email} order by b.idx desc  limit #{startIndexNo}, #{pageSize};
+	    </if>
+	    <if test='!orderStatus.equals("전체")'>
+	      select a.*,b.* from pdOrder a join pdDeliver b using(orderIdx) where b.email=#{email} and b.orderStatus=#{orderStatus} order by b.idx desc  limit #{startIndexNo}, #{pageSize};
+	    </if>
+  	</select>
+  	
+  	<!-- 관리자 상품리스트에서 해당 대분류 건수 가져오기 -->
+  	<select id="totRecCntMainPd" resultType="int">
+  		select count(*) from product where substr(productCode,1,1) =  #{categoryMainCode};
+  	</select> 
+  	
+  	<!-- 관리자 상품리스트에서 해당 중분류 건수 가져오기 -->
+  	<select id="totRecCntMidPd" resultType="int">
+  		select count(*) from product where substr(productCode,2,2) =  #{categoryMiddleCode};
+  	</select> 
+  	
+  	<!-- 관리자 상품리스트에서 상품 목록 가져오기 (중분류에 따라)-->
+  	<select id="getProductListMidAd" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+ 		select * from product where substr(productCode,1,1) =  #{categoryMainCode} and substr(productCode,2,2) =  #{categoryMiddleCode} order by idx desc limit #{startIndexNo}, #{pageSize};
+  	</select>
+  	
+  	<!-- 관리자 상품리스트에서 상품 목록 가져오기 (대분류에 따라)-->
+  	<select id="getProductListAdMain" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+ 		select * from product where substr(productCode,1,1) =  #{categoryMainCode} order by idx desc limit #{startIndexNo}, #{pageSize};
+  	</select>
+  	
+  	<!-- ~~~~~~~~~~~~~~~~~~~~~~~리뷰~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	
+	<!-- 주문 이력 체크 -->
+	<select id="orderCheck" resultType="com.spring.cjs2108_ksh.vo.PdOrderVO">
+		select * from pdOrder where email = #{email} and productIdx = #{productIdx} limit 1;
+	</select>
+	
+	<!-- 리뷰 DB 입력 -->
+	<insert id="reviewInput">
+		insert into pdReview values (default, default, #{vo.productIdx}, #{vo.productName}, #{vo.email}, #{vo.nickName}, #{vo.content}, #{vo.photo}, #{vo.rating});
+	</insert>
+	
+	<!-- 리뷰 개수 -->
+	<select id="totRecCntReview" resultType="int">
+		select count(*) from pdReview where productIdx = #{idx};
+	</select>
+	
+	<!-- 리뷰 가져오기 -->
+	<select id="getReview" resultType="com.spring.cjs2108_ksh.vo.PdReviewVO">
+		select * from pdReview where productIdx = #{idx} order by idx desc;
+	</select>
+	
+	<!-- 해당 idx 리뷰 가져오기 -->
+	<select id="getReviewContent" resultType="com.spring.cjs2108_ksh.vo.PdReviewVO">
+		select * from pdReview where idx = #{idx};
+	</select>
+	
+	<!-- 리뷰 삭제 -->
+	<delete id="reviewDelete">
+		delete from pdReview where idx = #{idx};
+	</delete>
+	
+	<!-- ~~~~~~~~~~~~~~~~~좋아요~~~~~~~~~~~~~~~~~ -->
+	<select id="getGoods"  resultType="com.spring.cjs2108_ksh.vo.GoodsVO">
+		select * from goods where email = #{email} and productIdx = #{idx};
+	</select>
+	
+	<!-- 좋아요 취소 -->
+	<delete id="resetLike">
+		delete from goods where email = #{email} and productIdx = #{idx};
+	</delete>
+	
+	<!-- 좋아요 입력 -->
+	<insert id="plusLike">
+		insert into goods values(#{email}, #{idx});
+	</insert>
+	
+	<!-- 해당 상품 좋아요 개수 -->
+	<select id="goodsCnt" resultType="int">
+		select count(*) from goods where productIdx = #{idx};
+	</select>
+	
+	<!-- 좋아요 상품 정보 가져오기 -->
+	<select id="getGoodProduct" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		select * from goods as g inner join product as p on g.productIdx = p.idx where email = #{email};
+	</select>
+	
+	<!-- 좋아요 많은 상위 3개 상품 idx 가져오기 -->
+	<select id="getBest3Idx" resultType="int">
+		select productIdx, count(*) as cnt from goods group by productIdx having count(*)>1 order by cnt desc limit 3;
+	</select>
+	
+	<!-- 좋아요 많은 상위 3개 상품 정보 가져오기 -->
+	<select id="getBest3Product" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		select * from goods as g inner join product as p on g.productIdx = p.idx where productIdx = #{idx} limit 1;
+	</select> 
+	
+	<!-- 판매수 많은 상위 3개 상품 idx 가져오기 -->
+	<select id="getBest3SellIdx" resultType="int">
+		select productIdx, count(*) as cnt from pdOrder group by productIdx having count(*)>1 order by cnt desc limit 3;
+	</select>
+	
+	<select id="getBest3SellProduct" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		select * from pdOrder as g inner join product as p on g.productIdx = p.idx where productIdx = #{idx} limit 1;
+	</select>
+	
+	<!-- 판매수 많은 상위 3개 상품 정보 가져오기 -->
+	<!-- <select id="getBest3Product" resultType="com.spring.cjs2108_ksh.vo.ProductVO">
+		select * from pdOrder as o inner join product as p on o.productIdx = p.idx where productIdx = #{idx} limit 1;
+	</select>  -->
+	
+</mapper>
