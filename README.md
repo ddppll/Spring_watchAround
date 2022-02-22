@@ -27,4 +27,4 @@
 ## 5. 참고 사이트
 + 푸터 템플릿 : https://mdbootstrap.com/
 + 크롤링 사이트 : https://m.kinolights.com/
-+ - 상품 정보 :  [CGV 시네마 스토어](https://brand.naver.com/cgv/) / [오드 프레젠트](https://www.audpresent.com/product/audcalendar/) / [마이페이보릿시네마스토어](https://smartstore.naver.com/cinemastore) / [플레인아카이브](https://smartstore.naver.com/plainarchive)
++ 상품 정보 :  [CGV 시네마 스토어](https://brand.naver.com/cgv/) / [오드 프레젠트](https://www.audpresent.com/product/audcalendar/) / [마이페이보릿시네마스토어](https://smartstore.naver.com/cinemastore) / [플레인아카이브](https://smartstore.naver.com/plainarchive)
