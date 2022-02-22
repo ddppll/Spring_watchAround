@@ -22,5 +22,5 @@
 + 크롤링을 통한 작품 검색
 
 ## 4. 시연 영상
-[![Video Label](http://img.youtube.com/vi/8570R8cq7PU/0.jpg)](https://youtu.be/8570R8cq7PU)
+<center>[![Video Label](http://img.youtube.com/vi/8570R8cq7PU/0.jpg)](https://youtu.be/8570R8cq7PU)</center>
 
