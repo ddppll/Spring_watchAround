@@ -1,7 +1,11 @@
 # [Spring 프로젝트] watchAround.
 
 <details>
-<summary>▶Contents</summary>
+<summary>Contents</summary>
 
-내용테스트
+1. 개요
+2. DB 설계
+3. 구현 기능
+  + 사용자 페이지
+   + 메인
 </details>
